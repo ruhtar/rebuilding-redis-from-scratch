@@ -7,11 +7,20 @@ import (
 	"os"
 )
 
+const (
+	STRING  = '+'
+	ERROR   = '-'
+	INTEGER = ':'
+	BULK    = '$'
+	ARRAY   = '*'
+)
+
 func main() {
-	fmt.Println("Listening on port :6379")
+	port := "7777"
+	fmt.Println("Listening on port: " + port)
 
 	// Create a new server
-	l, err := net.Listen("tcp", ":6379")
+	l, err := net.Listen("tcp", ": "+port)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -28,7 +37,9 @@ func main() {
 
 	for {
 		buf := make([]byte, 1024)
+
 		// read message from client
+
 		_, err = conn.Read(buf)
 		if err != nil {
 			if err == io.EOF {
