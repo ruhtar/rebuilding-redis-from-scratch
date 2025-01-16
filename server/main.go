@@ -28,14 +28,13 @@ func main() {
 
 	for {
 		buf := make([]byte, 1024)
-
 		// read message from client
 		_, err = conn.Read(buf)
 		if err != nil {
 			if err == io.EOF {
 				break
 			}
-			fmt.Println("error reading from client: ", err.Error())
+			fmt.Println("Error reading from client: ", err.Error())
 			os.Exit(1)
 		}
 
