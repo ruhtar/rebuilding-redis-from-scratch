@@ -61,7 +61,8 @@ type Resp struct {
 	reader *bufio.Reader
 }
 
-// *3\r\n$3\r\nset\r\n$5\r\nadmin\r\n$5\r\nahmed
+// readLine reads and removes the bytes from the buffer.
+// This functiona also ensures that we remove the CRLF from the buffer.
 func (r *Resp) readLine() (line []byte, n int, err error) {
 	for {
 		b, err := r.reader.ReadByte()
@@ -117,27 +118,27 @@ func (r *Resp) ReadFromBuffer() (value Value, err error) {
 }
 
 func (r *Resp) readArray() (Value, error) {
-	v := Value{}
-	v.typ = "array"
+	value := Value{}
+	value.typ = "array"
 
 	arraySize, _, err := r.readInteger()
 	if err != nil {
-		return v, err
+		return value, err
 	}
 
-	// foreach line, parse and read the value
-	v.array = make([]Value, arraySize)
+	value.array = make([]Value, arraySize)
+
 	for i := 0; i < arraySize; i++ {
 		val, err := r.ReadFromBuffer()
 		if err != nil {
-			return v, err
+			return value, err
 		}
 
 		// add parsed value to array
-		v.array[i] = val
+		value.array[i] = val
 	}
 
-	return v, nil
+	return value, nil
 }
 
 func (r *Resp) readBulk() (Value, error) {
@@ -145,19 +146,18 @@ func (r *Resp) readBulk() (Value, error) {
 
 	v.typ = "bulk"
 
-	len, _, err := r.readInteger()
+	lengthOfBulk, _, err := r.readInteger()
 	if err != nil {
 		return v, err
 	}
 
-	bulk := make([]byte, len)
+	bulk := make([]byte, lengthOfBulk)
 
-	r.reader.Read(bulk)
+	r.reader.Read(bulk) // This reads the buffer exactly until lengthOfBulk and saves the bytes read on the slice of bytes
 
-	v.bulk = string(bulk)
+	v.bulk = string(bulk) // Now with all bytes on the slice, we can create the string. Example: []byte{'H', 'e', 'l', 'l', 'o'} => "Hello"
 
-	// Read the trailing CRLF
-	r.readLine()
+	r.readLine() // And we finally read the line to remove the bytes and CRLF from the buffer.
 
 	return v, nil
 }
