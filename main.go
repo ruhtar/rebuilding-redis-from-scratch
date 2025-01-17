@@ -57,6 +57,10 @@ type Value struct {
 	array []Value
 }
 
+type Writer struct {
+	writer io.writer
+}
+
 type Resp struct {
 	reader *bufio.Reader
 }
@@ -160,4 +164,14 @@ func (r *Resp) readBulk() (Value, error) {
 	r.readLine() // And we finally read the line to remove the bytes and CRLF from the buffer.
 
 	return v, nil
+}
+
+func (v Value) marshallString() []byte {
+	var bytes []byte
+	bytes = append(bytes, STRING)
+	bytes = append(bytes, v.str...)
+	bytes = append(bytes, '\r')
+	bytes = append(bytes, '\n')
+
+	return bytes
 }
