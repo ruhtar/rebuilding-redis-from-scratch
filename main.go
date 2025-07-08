@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"net"
 	"strconv"
 )
@@ -58,7 +59,7 @@ type Value struct {
 }
 
 type Writer struct {
-	writer io.writer
+	writer io.Writer
 }
 
 type Resp struct {
