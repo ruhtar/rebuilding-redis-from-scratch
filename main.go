@@ -175,3 +175,11 @@ func (v Value) marshallString() []byte {
 
 	return bytes
 }
+
+func (v Value) marshallBulk() []byte {
+	var bytes []byte
+	bytes = append(bytes, BULK)
+	bytes = append(bytes, byte(v.num))
+
+	return bytes
+}
