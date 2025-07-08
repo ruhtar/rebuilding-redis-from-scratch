@@ -106,10 +106,6 @@ func (r *Resp) ReadFromBuffer() (value Value, err error) {
 
 	fmt.Println("First byte of the sequence: " + string(_type))
 
-	if err != nil {
-		return Value{}, err
-	}
-
 	switch _type {
 	case ARRAY:
 		return r.readArray()
